@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIBLIOTHECA - Système de Gestion de Bibliothèque</title>
+    <!-- Chart.js library for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- =========================================== -->
+    <!-- MOBILE MENU TOGGLE (for small screens) -->
+    <!-- =========================================== -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- =========================================== -->
+    <!-- SIDEBAR NAVIGATION -->
+    <!-- =========================================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h1>📚 BIBLIOTHECA</h1>
+            <p>Système de Gestion de Bibliothèque</p>
+        </div>
+        <ul class="nav-menu">
+            <!-- Menu Item 1: Dashboard -->
+            <li class="nav-item active" onclick="showSection('dashboard')">
+                <span>📊</span>
+                <span>Tableau de Bord</span>
+            </li>
+            
+            <!-- Menu Item 2: Add Book -->
+            <li class="nav-item" onclick="showSection('add-book')">
+                <span>➕</span>
+                <span>Ajouter un Livre</span>
+            </li>
+            
+            <!-- Menu Item 3: My Books -->
+            <li class="nav-item" onclick="showSection('my-books')">
+                <span>📚</span>
+                <span>Mes Livres</span>
+            </li>
+            
+            <!-- Menu Item 4: Authors (MODULE 2) -->
+            <li class="nav-item" onclick="showSection('authors')">
+                <span>✍️</span>
+                <span>Auteurs</span>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- =========================================== -->
+    <!-- MAIN CONTENT AREA -->
+    <!-- =========================================== -->
+    <main class="main-content">
+        <!-- =========================================== -->
+        <!-- SECTION 1: DASHBOARD (MODULE 3) -->
+        <!-- =========================================== -->
+        <section id="dashboard" class="section active">
+            <div class="header">
+                <h2>📊 Tableau de Bord</h2>
+                <p>Statistiques et indicateurs de performance de votre bibliothèque</p>
+            </div>
+
+            <!-- ========== KPI CARDS ========== -->
+            <div class="kpi-container">
+                <!-- KPI 1: Total Books -->
+                <div class="kpi-card">
+                    <div class="kpi-icon">📚</div>
+                    <div class="kpi-content">
+                        <h3>Total Livres</h3>
+                        <div class="kpi-value" id="total-books-kpi">0</div>
+                        <p class="kpi-desc">Nombre total de livres dans la bibliothèque</p>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Total Authors -->
+                <div class="kpi-card">
+                    <div class="kpi-icon">✍️</div>
+                    <div class="kpi-content">
+                        <h3>Total Auteurs</h3>
+                        <div class="kpi-value" id="total-authors-kpi">0</div>
+                        <p class="kpi-desc">Nombre total d'auteurs enregistrés</p>
+                    </div>
+                </div>
+                
+                <!-- KPI 3: Most Popular Genre -->
+                <div class="kpi-card">
+                    <div class="kpi-icon">🏆</div>
+                    <div class="kpi-content">
+                        <h3>Genre Populaire</h3>
+                        <div class="kpi-value" id="popular-genre-kpi">Aucun</div>
+                        <p class="kpi-desc">Genre le plus représenté</p>
+                    </div>
+                </div>
+
+                <!-- KPI 4: API Books (External Data) -->
+                <div class="kpi-card">
+                    <div class="kpi-icon">🌐</div>
+                    <div class="kpi-content">
+                        <h3>Livres Externes</h3>
+                        <div class="kpi-value" id="api-books-kpi">0</div>
+                        <p class="kpi-desc">Livres disponibles via API</p>
+                    </div>
+                </div>
+            
+<!-- KPI 5: API Authors -->
+<div class="kpi-card">
+    <div class="kpi-icon">👥</div>
+    <div class="kpi-content">
+        <h3>Auteurs API</h3>
+        <div class="kpi-value" id="api-authors-kpi">0</div>
+        <p class="kpi-desc">Auteurs différents disponibles via API</p>
+    </div>
+</div>
+</div>
+            <!-- ========== CHARTS ========== -->
+            <div class="charts-container">
+                <!-- Chart 1: Books by Genre -->
+                <div class="card chart-card">
+                    <h3>📊 Répartition par Genre</h3>
+                    <p>Distribution des livres par catégorie</p>
+                    <canvas id="genre-chart"></canvas>
+                </div>
+
+                <!-- Chart 2: Books by Year -->
+                <div class="card chart-card">
+                    <h3>📅 Livres par Année</h3>
+                    <p>Évolution des publications</p>
+                    <canvas id="year-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- ========== API SECTION ========== -->
+            <div class="card">
+                <h3>🌐 Intégration API - OpenLibrary</h3>
+                <p>Récupérez des informations de livres depuis une base de données externe</p>
+                
+                <div class="api-controls">
+                    <input type="text" id="search-term" placeholder="Rechercher un livre (ex: Harry Potter)" style="flex: 1; padding: 10px;">
+                    <button class="btn btn-primary" onclick="searchExternalBooks()">🔍 Rechercher</button>
+                </div>
+                
+                <!-- API Results -->
+                <div id="api-results" class="api-results">
+                    <p class="api-instructions">Entrez un terme de recherche pour commencer...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================== -->
+        <!-- SECTION 2: ADD BOOK (MODULE 1 - Part 1) -->
+        <!-- =========================================== -->
+        <section id="add-book" class="section">
+            <div class="header">
+                <h2>➕ Ajouter un Livre</h2>
+                <p>Remplissez le formulaire pour ajouter un nouveau livre à votre bibliothèque</p>
+            </div>
+
+            <div class="card">
+                <form id="book-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title">Titre du Livre *</label>
+                            <input type="text" id="title" required placeholder="Entrez le titre du livre">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="author">Auteur *</label>
+                            <!-- Remplacement de l'input par un select -->
+                            <select id="author" required>
+                                <option value="">Sélectionnez un auteur</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Année de Publication *</label>
+                            <input type="number" id="year" required placeholder="2024" min="1000" max="2100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genre">Genre *</label>
+                            <select id="genre" required>
+                                <option value="">Sélectionnez un genre</option>
+                                <option value="Roman">Roman</option>
+                                <option value="Science-Fiction">Science-Fiction</option>
+                                <option value="Fantaisie">Fantaisie</option>
+                                <option value="Biographie">Biographie</option>
+                                <option value="Histoire">Histoire</option>
+                                <option value="Scientifique">Scientifique</option>
+                                <option value="Poésie">Poésie</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" placeholder="Décrivez le livre... (facultatif)"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">Ajouter le Livre</button>
+                        <button type="button" class="btn btn-cancel" id="cancel-btn" style="display: none;">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- =========================================== -->
+        <!-- SECTION 3: MY BOOKS (MODULE 1 - Part 2) -->
+        <!-- =========================================== -->
+        <section id="my-books" class="section">
+            <div class="header">
+                <h2>📚 Mes Livres</h2>
+                <p>Gérez votre collection de livres</p>
+            </div>
+
+            <!-- Search and Sort Controls -->
+            <div class="card control-card">
+                <div class="controls-row">
+                    <input type="text" id="search-books" placeholder="🔍 Rechercher un livre..." 
+                           oninput="searchBooks()" style="flex: 1;">
+                    
+                    <select id="sort-books" onchange="sortBooks()" style="margin-left: 10px;">
+                        <option value="title-asc">Titre (A-Z)</option>
+                        <option value="title-desc">Titre (Z-A)</option>
+                        <option value="year-asc">Année (Croissant)</option>
+                        <option value="year-desc">Année (Décroissant)</option>
+                        <option value="author-asc">Auteur (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Books Grid -->
+            <div class="card">
+                <div id="books-container" class="books-grid"></div>
+            </div>
+        </section>
+
+        <!-- =========================================== -->
+        <!-- SECTION 4: AUTHORS (MODULE 2) -->
+        <!-- =========================================== -->
+        <section id="authors" class="section">
+            <div class="header">
+                <h2>✍️ Gestion des Auteurs</h2>
+                <p>Gérez les auteurs de votre bibliothèque</p>
+            </div>
+
+            <!-- Form to Add Author -->
+            <div class="card">
+                <form id="author-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="author-name">Nom de l'Auteur *</label>
+                            <input type="text" id="author-name" required placeholder="Entrez le nom de l'auteur">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="author-nationality">Nationalité</label>
+                            <input type="text" id="author-nationality" placeholder="Ex: Française, Américaine...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="author-birth-year">Année de naissance</label>
+                            <input type="number" id="author-birth-year" placeholder="1900" min="1000" max="2025">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="author-bio">Biographie (facultatif)</label>
+                            <textarea id="author-bio" placeholder="Quelques informations sur l'auteur..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">➕ Ajouter l'Auteur</button>
+                </form>
+            </div>
+
+            <!-- Authors List -->
+            <div class="card" style="margin-top: 20px;">
+                <h3>📋 Liste des Auteurs</h3>
+                <div id="authors-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
